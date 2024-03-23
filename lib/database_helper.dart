@@ -1,0 +1,68 @@
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'package:todo_app/todo_model.dart';
+
+class DatabaseHelper {
+  late Database _database;
+  bool _isDatabaseInitialized = false;
+
+  Future<void> initializeDatabase() async {
+    if (!_isDatabaseInitialized) {
+      _database = await openDatabase(
+        join(await getDatabasesPath(), 'todositems_database.db'),
+        onCreate: (db, version) {
+          return db.execute(
+            'CREATE TABLE todositems(id INTEGER PRIMARY KEY, title TEXT, content TEXT, date TEXT)',
+          );
+        },
+        version: 1,
+      );
+      _isDatabaseInitialized = true;
+    }
+  }
+
+  Future<void> insertTodo(Todo todo) async {
+    await initializeDatabase();
+    final localDB = await _database;
+    await localDB.insert(
+      'todositems',
+      todo.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<Todo>> getAllTodos() async {
+    await initializeDatabase();
+    final localDB = await _database;
+    final List<Map<String, dynamic>> maps = await localDB.query('todositems');
+    return List.generate(maps.length, (i) {
+      return Todo(
+        id: maps[i]['id'],
+        title: maps[i]['title'],
+        content: maps[i]['content'],
+        date: maps[i]['date'],
+      );
+    });
+  }
+
+  Future<void> updateTodo(Todo todo) async {
+    await initializeDatabase();
+    final localDB = await _database;
+    await localDB.update(
+      'todositems',
+      todo.toMap(),
+      where: 'id = ?',
+      whereArgs: [todo.id],
+    );
+  }
+
+  Future<void> deleteTodo(int id) async {
+    await initializeDatabase();
+    final localDB = await _database;
+    await localDB.delete(
+      'todositems',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+}
