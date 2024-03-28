@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo_app/database_helper.dart';
+import 'package:todo_app/login_page.dart';
 import 'package:todo_app/todo_model.dart';
 import 'package:intl/intl.dart';
 void main() => runApp(const MyApp());
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: AdvanceTODO(),
+      home: LoginPage(),
     );
   }
 }
@@ -56,20 +57,15 @@ class _AdvanceTODOState extends State {
       tasks = todoList;
     });
   }
-  // List tasks = [];
-
-  // TextEditingController titleController = TextEditingController();
-  // TextEditingController contentController = TextEditingController();
-  // TextEditingController dateController = TextEditingController();
 
   bool isEditTask = false;
 
-  // List colorList = const [
-  //   Color.fromRGBO(253, 181, 181, 1),
-  //   Color.fromRGBO(160, 187, 255, 1),
-  //   Color.fromRGBO(253, 249, 177, 1),
-  //   Color.fromRGBO(237, 166, 237, 1),
-  // ];
+  List colorList = const [
+    Color.fromRGBO(253, 181, 181, 1),
+    Color.fromRGBO(160, 187, 255, 1),
+    Color.fromRGBO(253, 249, 177, 1),
+    Color.fromRGBO(237, 166, 237, 1),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -154,89 +150,106 @@ class _AdvanceTODOState extends State {
                             return Slidable(
                               actionPane: const SlidableDrawerActionPane(),
                               secondaryActions: [
-                                IconSlideAction(
-                                  caption: 'Delete',
-                                  color: Colors.red,
-                                  icon: Icons.delete,
-                                  onTap: () {
-                                    _deleteTask(index);
-                                  },
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle
+                                  ),
+                                  child: IconSlideAction(
+                                    caption: 'Delete',
+                                    color: Colors.red,
+                                    icon: Icons.delete,
+                                    onTap: () {
+                                      _deleteTask(index);
+                                    },
+                                  ),
                                 ),
-                                IconSlideAction(
-                                  caption: 'Edit',
-                                  color: Colors.blue,
-                                  icon: Icons.edit,
-                                  onTap: () {
-                                    isEditTask = true;
-                                    showModalmyBottomSheet(index);
-                                  },
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: IconSlideAction(
+                                    caption: 'Edit',
+                                    color: Colors.blue,
+                                    icon: Icons.edit,
+                                    onTap: () {
+                                      isEditTask = true;
+                                      showModalmyBottomSheet(index);
+                                    },
+                                  ),
                                 ),
                               ],
-                              child: Row(
-                                children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.all(5),
-                                    height: 50,
-                                    width: 50,
-                                    // decoration: const BoxDecoration(
-                                    //   shape: BoxShape.circle,
-                                    // ),
-                                    child: Image.network(
-                                        "https://cdn1.vectorstock.com/i/thumbs/89/00/circle-blue-icon-with-shadow-sheet-of-paper-vector-2638900.jpg"),
-                                  ),
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  Column(
-                                    children: [
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text(
-                                        tasks[index].title,
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w800),
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        tasks[index].content,
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        tasks[index].date,
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w600,
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 0),
+                                margin: const EdgeInsets.only(top: 10),
+                                decoration: BoxDecoration(
+                                  color: colorList[index % colorList.length],
+                                ),
+                                child: Row(
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.all(5),
+                                      height: 50,
+                                      width: 50,
+                                      // decoration: const BoxDecoration(
+                                      //   shape: BoxShape.circle,
+                                      // ),
+                                      child: Image.asset(
+                                          "assets/images/todolist.png"),
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 10,
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  const Spacer(),
-                                  const Column(
-                                    children: [
-                                      Padding(
-                                          padding: EdgeInsets.only(right: 100)),
-                                      Icon(
-                                        Icons.check_box,
-                                        color: Colors.green,
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  )
-                                ],
+                                        Text(
+                                          tasks[index].title,
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w800),
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          tasks[index].content,
+                                          style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          tasks[index].date,
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const Spacer(),
+                                    const Column(
+                                      children: [
+                                        Padding(
+                                            padding: EdgeInsets.only(right: 100)),
+                                        Icon(
+                                          Icons.check_box,
+                                          color: Colors.green,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    )
+                                  ],
+                                ),
                               ),
                             );
                           }),

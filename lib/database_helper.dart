@@ -9,16 +9,24 @@ class DatabaseHelper {
   Future<void> initializeDatabase() async {
     if (!_isDatabaseInitialized) {
       _database = await openDatabase(
-        join(await getDatabasesPath(), 'todositems_database.db'),
+        join(await getDatabasesPath(), 'todos_database.db'),
         onCreate: (db, version) {
-          return db.execute(
-            'CREATE TABLE todositems(id INTEGER PRIMARY KEY, title TEXT, content TEXT, date TEXT)',
-          );
+          _createTables(db);
         },
         version: 1,
       );
       _isDatabaseInitialized = true;
     }
+  }
+
+  void _createTables(Database db) {
+    db.execute(
+      'CREATE TABLE todositems(id INTEGER PRIMARY KEY, title TEXT, content TEXT, date TEXT)',
+    );
+
+    db.execute(
+      'CREATE TABLE users(id INTEGER PRIMARY KEY, email TEXT, password TEXT)',
+    );
   }
 
   Future<void> insertTodo(Todo todo) async {
@@ -64,5 +72,31 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<void> insertUsers(String email, String password) async {
+    await initializeDatabase();
+    final localDB = await _database;
+
+    await localDB.insert(
+      'users',
+      {'email': email, 'password': password},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<Map<String, dynamic>?> getUser(String email, String password) async {
+    await initializeDatabase();
+    final localDB = await _database;
+    List<Map<String, dynamic>> users = await localDB.query(
+      'users',
+      where: 'email = ? And password =?',
+      whereArgs: [email, password],
+      limit: 1,
+    );
+    if (users.isNotEmpty) {
+      return users.first;
+    }
+    return null;
   }
 }
